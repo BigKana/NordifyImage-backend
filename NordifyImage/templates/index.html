@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NordifyImage - Nordify your Images</title>
+  <style>
+      body {
+          font-family: Arial, sans-serif;
+          background-color: #f0f4f8;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 20px;
+      }
+      h1 { color: #2c3e50; }
+      form { margin: 20px 0; text-align: center; }
+      input[type="file"] { margin: 10px; }
+      button {
+          padding: 10px 20px;
+          background-color: #3498db;
+          color: white;
+          border: none;
+          cursor: pointer;
+          font-size: 16px;
+      }
+      button:hover { background-color: #2980b9; }
+      #preview {
+          margin-top: 20px;
+          max-width: 400px;
+          max-height: 400px;
+          display: none;
+          border: 1px solid #ddd;
+          padding: 5px;
+          background-color: white;
+      }
+      #loading {
+          display: none;
+          font-size: 18px;
+          color: #3498db;
+          margin-top: 10px;
+      }
+      #processed-image {
+          margin-top: 20px;
+          text-align: center;
+      }
+      #processed-image img {
+          max-width: 500px;
+          max-height: 500px;
+          border: 1px solid #ddd;
+      }
+      #processed-image a {
+          display: block;
+          margin-top: 10px;
+          text-decoration: none;
+          color: #3498db;
+      }
+  </style>
+</head>
+<body>
+  <h1>Upload your image and Nordify Your Image</h1>
+  <form action="/upload" method="POST" enctype="multipart/form-data" id="upload-form">
+    <input type="file" name="file" id="file-input" accept="image/*" required>
+    <br>
+    <button type="submit">Upload and Nordify it</button>
+  </form>
+  
+  <img id="preview" src="#" alt="Preview">
+  
+  <div id="loading">Editing your image, please wait :D</div>
+  
+  {% if processed_image_path %}
+  <div id="processed-image">
+    <h2>Processed Image</h2>
+    <img src="{{ processed_image_path }}" alt="Processed Image">
+    <a href="{{ processed_image_path }}" download>Download Processed Image (via static)</a>
+    {% if processed_filename %}
+    <a href="{{ url_for('download_file', filename=processed_filename) }}" download>
+      Download Processed Image (via /download)
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
+  
+  <script>
+    document.getElementById('file-input').addEventListener('change', function(event) {
+      var file = event.target.files[0];
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var preview = document.getElementById('preview');
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+      };
+      if (file) {
+        reader.readAsDataURL(file);
+      } else {
+        document.getElementById('preview').style.display = 'none';
+      }
+    });
+    document.getElementById('upload-form').addEventListener('submit', function() {
+      document.getElementById('loading').style.display = 'block';
+    });
+  </script>
+</body>
+</html>
